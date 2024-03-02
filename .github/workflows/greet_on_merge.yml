@@ -1,4 +1,20 @@
-name: Greet on PR Merge
+name: Greeting the new contributor 
+
+on: [pull_request, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: > 
+            Welcome to offical website repository for [json-schema.org](https://json-schema.org/). Thanks a lot for reporting your first issue. Please check out our [contributors guide](https://github.com/json-schema-org/website/blob/main/CONTRIBUTING.md) if you plan on opening a pull request.
+            For more details check out [README.md](https://github.com/json-schema-org/website?tab=readme-ov-file#-welcome-to-the-json-schema-website) file.
+        pr-message: > 
+            Welcome to offical repository for [json-schema.org](https://json-schema.org/). Thanks a lot for creating your first pull request. Please be sure you have reviewed the [contributors guide](https://github.com/json-schema-org/website/blob/main/CONTRIBUTING.md) for this and future pull requests. 
+            For more details check out [README.md](https://github.com/json-schema-org/website?tab=readme-ov-file#-welcome-to-the-json-schema-website) file.name: Greet on PR Merge
 
 on:
   pull_request:
