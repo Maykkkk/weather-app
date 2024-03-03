@@ -1,39 +1,27 @@
-name: Greet first time contributor
+name: Pull Request Greeting
 
 on:
-  issues:
-    types: [opened]
   pull_request:
-    types: [opened, closed]
+    types: [closed]
 
 jobs:
-  check_for_first_interaction:
-    runs-on: ubuntu-22.04
+  greet:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: zephyrproject-rtos/action-first-interaction@v1.1.1-zephyr-1
+      - name: Check if pull request was merged
+        if: github.event.pull_request.merged == true
+        uses: actions/github-script@v4
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const authorLogin = context.payload.pull_request.user.login;
+            const greetingMessage = `🎉 Congratulations, @${authorLogin}! Your pull request was successfully merged. Thank you for your contribution! 🚀`;
 
-          issue-message: >
-            Hi @${{github.event.issue.user.login}}! We appreciate you submitting your first issue
-            for our open-source project. 🌟
-            Even though I'm a bot, I can assure you that the whole community is genuinely grateful
-            for your time and effort. 🤖💙
-          pr-opened-message: >
-            Hello @${{ github.event.pull_request.user.login }}, and thank you very much for your
-            first pull request to the Zephyr project!
-            A project maintainer just triggered our CI pipeline to run it against your PR and
-            ensure it's compliant and doesn't cause any issues. You might want to take this
-            opportunity to review the project's [Contributor
-            Expectations](https://docs.zephyrproject.org/latest/contribute/contributor_expectations.html)
-            and make any updates to your pull request if necessary. 😊
-          pr-merged-message: >
-            Hi @${{ github.event.pull_request.user.login }}!
-            Congratulations on getting your very first Zephyr pull request merged 🎉🥳. This is a
-            fantastic achievement, and we're thrilled to have you as part of our community!
-            To celebrate this milestone and showcase your contribution, we'd love to award you the
-            Zephyr Technical Contributor badge. If you're interested, please claim your badge by
-            filling out this form: [Claim Your Zephyr Badge](https://forms.gle/oCw9iAPLhUsHTapc8).
-            Thank you for your valuable input, and we look forward to seeing more of your
-            contributions in the future! 🪁
+            // Add a comment to the pull request with the greeting message
+            await github.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: greetingMessage
+            });
